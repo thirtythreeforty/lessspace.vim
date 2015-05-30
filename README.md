@@ -20,10 +20,10 @@ LessSpace doesn't offer many configuration options, because everything happens a
 It does, however, allow you to change the filetypes that it operates on.
 (Perhaps, for example, you're writing [Whitespace](https://en.wikipedia.org/wiki/Whitespace_%28programming_language%29).)
 By default it operates on `.*`, all filetypes.
-You can change this by setting the `g:lessspace_extensions` variable, preferably in your `vimrc` file.
+You can change this by setting the `g:lessspace_whitelist` variable, preferably in your `vimrc` file.
 For example, to only operate on Vim and Ruby files, you could use:
 
-    let g:lessspace_extensions = 'ruby\|vim'
+    let g:lessspace_whitelist = 'ruby\|vim'
 
 You can use any regular expression describing one or more filetypes.
 Note that the regex is always evaluated in "magic" mode, so ensure you escape the proper characters.
