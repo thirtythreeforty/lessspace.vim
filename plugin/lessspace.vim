@@ -49,5 +49,12 @@ augroup TrailingWhitespace
     autocmd InsertEnter * :call <SID>SetupTrailingWhitespaces()
     autocmd InsertLeave * :call <SID>StripTrailingWhitespaces()
     autocmd CursorMovedI * :call <SID>UpdateTrailingWhitespace()
+
+    " The user may move between buffers in insert mode
+    " (for example, with the mouse), so handle this appropriately.
+    autocmd BufEnter * :if mode() == 'i'
+        \ | call <SID>SetupTrailingWhitespaces() | endif
+    autocmd BufLeave * :if mode() == 'i'
+        \ | call <SID>StripTrailingWhitespaces() | endif
 augroup END
 
