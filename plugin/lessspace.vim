@@ -32,6 +32,11 @@ fun! <SID>StripTrailingWhitespaces()
         return
     endif
 
+    " And if the buffer is modifiable
+    if !&modifiable
+        return
+    endif
+
     let original_cursor = getpos('.')
     let file_bottom = line('$')
 
