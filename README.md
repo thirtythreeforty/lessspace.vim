@@ -27,3 +27,8 @@ For example, to only operate on Vim and Ruby files, you could use:
 
 You can use any regular expression describing one or more filetypes.
 Note that the regex is always evaluated in "magic" mode, so ensure you escape the proper characters.
+
+## License
+
+Copyright © 2015 George Hilliard.  Distributed under the same terms as Vim itself.
+See `:help license`.
