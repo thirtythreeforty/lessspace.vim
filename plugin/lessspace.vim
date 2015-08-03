@@ -11,6 +11,11 @@ if !exists('g:lessspace_whitelist')
     let g:lessspace_whitelist = '.*'
 endif
 
+" By default, enable by default
+if !exists('g:lessspace_enabled')
+    let g:lessspace_enabled = 1
+endif
+
 fun! <SID>SetupTrailingWhitespaces()
     let curline = line('.')
     let b:insert_top = curline
@@ -27,13 +32,11 @@ fun! <SID>UpdateTrailingWhitespace()
 endfun
 
 fun! <SID>StripTrailingWhitespaces()
-    " Only do this on whitelisted filetypes
+    " Only do this on whitelisted filetypes and if the buffer is modifiable
     if &filetype !~ g:lessspace_whitelist
-        return
-    endif
-
-    " And if the buffer is modifiable
-    if !&modifiable
+        \ || !&modifiable
+        \ || !g:lessspace_enabled
+        \ || (exists('b:lessspace_enabled') && !b:lessspace_enabled)
         return
     endif
 
@@ -49,7 +52,10 @@ fun! <SID>StripTrailingWhitespaces()
     call setpos('.', original_cursor)
 endfun
 
-augroup TrailingWhitespace
+command! -bang LessSpace let g:lessspace_enabled = <bang>1
+command! -bang LessSpaceBuf let b:lessspace_enabled = <bang>1
+
+augroup LessSpace
     autocmd!
     autocmd InsertEnter * :call <SID>SetupTrailingWhitespaces()
     autocmd InsertLeave * :call <SID>StripTrailingWhitespaces()
@@ -62,4 +68,3 @@ augroup TrailingWhitespace
     autocmd BufLeave * :if mode() == 'i'
         \ | call <SID>StripTrailingWhitespaces() | endif
 augroup END
-

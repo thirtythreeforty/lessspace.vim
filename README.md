@@ -14,10 +14,33 @@ If you don't have a preferred installation method, I recommend installing [patho
     cd ~/.vim/bundle
     git clone git://github.com/thirtythreeforty/lessspace.vim
 
+## Usage
+
+For basic usage, just install it and forget it.
+LessSpace works automatically.
+
+LessSpace provides a couple commands that allow you to turn it on or off, either globally or per-buffer.
+The global commands are:
+
+ - `LessSpace`: Turn on whitespace stripping
+ - `LessSpace!`: Turn off whitespace stripping
+
+The per-buffer commands are very similar:
+
+ - `LessSpaceBuf`: Turn on whitespace stripping
+ - `LessSpaceBuf!`: Turn off whitespace stripping
+
 ## Configuration
 
 LessSpace doesn't offer many configuration options, because everything happens automatically when you enter and leave Insert mode.
-It does, however, allow you to change the filetypes that it operates on.
+
+You can disable LessSpace on startup by setting the `g:lessspace_enabled` variable:
+
+    let g:lessspace_enabled = 0
+
+(The same effect can be achieved after startup by just running `:LessSpace!`.)
+
+You can also specify the filetypes that it operates on.
 (Perhaps, for example, you're writing [Whitespace](https://en.wikipedia.org/wiki/Whitespace_%28programming_language%29).)
 By default it operates on `.*`, all filetypes.
 You can change this by setting the `g:lessspace_whitelist` variable, preferably in your `vimrc` file.
