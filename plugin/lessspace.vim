@@ -41,14 +41,14 @@ fun! <SID>StripTrailingWhitespaces()
     endif
 
     let original_cursor = getpos('.')
-    let file_bottom = line('$')
 
     " Handle the user deleting lines at the bottom
+    let file_bottom = line('$')
     if b:insert_bottom > file_bottom
         let b:insert_bottom = file_bottom
     endif
 
-    exe b:insert_top ',' b:insert_bottom 's/\s\+$//e'
+    exe b:insert_top ',' b:insert_bottom 's/\v\s+$//e'
     call setpos('.', original_cursor)
 endfun
 
