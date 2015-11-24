@@ -20,15 +20,22 @@ fun! <SID>SetupTrailingWhitespaces()
     let curline = line('.')
     let b:insert_top = curline
     let b:insert_bottom = curline
+    let b:whitespace_lastline = curline
 endfun
 
 fun! <SID>UpdateTrailingWhitespace()
+    " Handle motion this way (rather than checking if
+    " b:insert_bottom < curline) to catch the case where the user presses
+    " Enter, types whitespace, moves up, and presses Enter again.
     let curline = line('.')
-    if b:insert_top > curline
-        let b:insert_top = curline
-    elseif b:insert_bottom < curline
-        let b:insert_bottom = curline
+
+    if b:whitespace_lastline < curline
+        let b:insert_bottom = b:insert_bottom + (curline - b:whitespace_lastline)
+    elseif b:whitespace_lastline > curline
+        let b:insert_top = b:insert_top - (b:whitespace_lastline - curline)
     endif
+
+    let b:whitespace_lastline = curline
 endfun
 
 fun! <SID>StripTrailingWhitespaces()
