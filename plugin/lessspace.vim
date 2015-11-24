@@ -6,9 +6,9 @@ if exists('g:loaded_lessspace_plugin')
 endif
 let g:loaded_lessspace_plugin = 1
 
-" By default whitelist everything
-if !exists('g:lessspace_whitelist')
-    let g:lessspace_whitelist = '.*'
+" By default blacklist nothing, unless the user has other preferences
+if !exists('g:lessspace_whitelist') && !exists('g:lessspace_blacklist')
+    let g:lessspace_blacklist = []
 endif
 
 " By default, enable by default
@@ -33,7 +33,7 @@ endfun
 
 fun! <SID>StripTrailingWhitespaces()
     " Only do this on whitelisted filetypes and if the buffer is modifiable
-    if &filetype !~ g:lessspace_whitelist
+    if !<SID>ShouldStripFiletype(&filetype)
         \ || !&modifiable
         \ || !g:lessspace_enabled
         \ || (exists('b:lessspace_enabled') && !b:lessspace_enabled)
@@ -50,6 +50,21 @@ fun! <SID>StripTrailingWhitespaces()
 
     exe b:insert_top ',' b:insert_bottom 's/\v\s+$//e'
     call setpos('.', original_cursor)
+endfun
+
+fun! <SID>ShouldStripFiletype(filetype)
+    " Whitelists override blacklists.
+    if exists("g:lessspace_whitelist")
+        if type(g:lessspace_whitelist) == type("")
+            " Legacy handling of a regex whitelist.
+            " Why did I ever think this was a good idea?
+            return a:filetype =~# g:lessspace_whitelist
+        endif
+
+        return index(g:lessspace_whitelist, a:filetype) >= 0
+    else
+        return !(index(g:lessspace_blacklist, a:filetype) >= 0)
+    endif
 endfun
 
 command! -bang LessSpace let g:lessspace_enabled = <bang>1

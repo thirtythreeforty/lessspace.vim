@@ -40,16 +40,21 @@ You can disable LessSpace on startup by setting the `g:lessspace_enabled` variab
 
 (The same effect can be achieved after startup by just running `:LessSpace!`.)
 
-You can also specify the filetypes that it operates on.
+You can also specify the filetypes that it operates on by specifying a filetype whitelist or blacklist.
 (Perhaps, for example, you're writing [Whitespace](https://en.wikipedia.org/wiki/Whitespace_%28programming_language%29).)
-By default it operates on `.*`, all filetypes.
-You can change this by setting the `g:lessspace_whitelist` variable, preferably in your `vimrc` file.
+By default, nothing is blacklisted.
+You can change this by setting either of the `g:lessspace_whitelist` or `g:lessspace_blacklist` variables, preferably in your `vimrc` file.
+These variables should be lists of the desired filetypes.
 For example, to only operate on Vim and Ruby files, you could use:
 
-    let g:lessspace_whitelist = 'ruby\|vim'
+    let g:lessspace_whitelist = ['ruby', 'vim']
 
-You can use any regular expression describing one or more filetypes.
-Note that the regex is always evaluated in "magic" mode, so ensure you escape the proper characters.
+And to operate on everything but Python files:
+
+    let g:lessspace_blacklist = ['python']
+
+(Previously, the whitelist had to be specified as a regex string.
+If you are using this form, it will continue to work, but you should update to the list-based method.)
 
 ## License
 
