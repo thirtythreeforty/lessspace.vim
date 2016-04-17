@@ -23,18 +23,31 @@ fun! <SID>SetupTrailingWhitespaces()
     let b:whitespace_lastline = curline
 endfun
 
-fun! <SID>UpdateTrailingWhitespace()
+fun! <SID>OnTextChangedI()
     " Handle motion this way (rather than checking if
     " b:insert_bottom < curline) to catch the case where the user presses
     " Enter, types whitespace, moves up, and presses Enter again.
     let curline = line('.')
 
     if b:whitespace_lastline < curline
+        " User inserted lines below whitespace_lastline
         let b:insert_bottom = b:insert_bottom + (curline - b:whitespace_lastline)
     elseif b:whitespace_lastline > curline
+        " User inserted lines above whitespace_lastline
         let b:insert_top = b:insert_top - (b:whitespace_lastline - curline)
     endif
 
+    let b:whitespace_lastline = curline
+endfun
+
+fun! <SID>OnCursorMovedI()
+    " This function is called when the cursor moves, including when the
+    " user types text.  However we've already handled the text typing in the
+    " OnTextChangedI() hook, so this function is harmless.
+    let curline = line('.')
+
+    let b:insert_top = min([curline, b:insert_top])
+    let b:insert_bottom = max([curline, b:insert_bottom])
     let b:whitespace_lastline = curline
 endfun
 
@@ -81,7 +94,8 @@ augroup LessSpace
     autocmd!
     autocmd InsertEnter * :call <SID>SetupTrailingWhitespaces()
     autocmd InsertLeave * :call <SID>StripTrailingWhitespaces()
-    autocmd CursorMovedI * :call <SID>UpdateTrailingWhitespace()
+    autocmd TextChangedI * :call <SID>OnTextChangedI()
+    autocmd CursorMovedI * :call <SID>OnCursorMovedI()
 
     " The user may move between buffers in insert mode
     " (for example, with the mouse), so handle this appropriately.
