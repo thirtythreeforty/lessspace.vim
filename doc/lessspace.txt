@@ -1,0 +1,84 @@
+*lessspace.txt*           LessSpace: Better whitespace stripping for Vim
+
+                                                       *lessspace-intro*
+This simple plugin will strip the trailing whitespace from the file
+you are editing.  However, it does this only on the lines you have
+visited in Insert mode; it leaves all the others untouched.
+
+Copyright (c) 2015-2016 George Hilliard.  Distributed under the same
+terms as Vim itself.  See the |license| for details.
+
+
+======================================================================
+CONTENTS                                            *lessspace-contents*
+
+    Usage                                              |lessspace-usage|
+    Configuration                              |lessspace-configuration|
+    Known Issues                                      |lessspace-issues|
+
+======================================================================
+USAGE                                                  *lessspace-usage*
+
+    For basic usage, just install it and forget it.  LessSpace works
+    automatically.
+
+    LessSpace provides a couple commands that allow you to turn it on
+    or off, either globally or per-buffer.  The global commands are:
+
+        - `LessSpace`     Turn on whitespace stripping       *:LessSpace*
+        - `LessSpace!`    Turn off whitespace stripping      *:LessSpace!*
+
+    The per-buffer commands are very similar:
+
+        - `LessSpaceBuf`  Turn on whitespace stripping    *:LessSpaceBuf*
+        - `LessSpaceBuf!` Turn off whitespace stripping   *:LessSpaceBuf!*
+
+
+======================================================================
+CONFIGURATION                                  *lessspace-configuration*
+
+    LessSpace doesn't offer many configuration options, because
+    everything happens automatically when you enter and leave Insert
+    mode.
+
+                                                   *g:lessspace_enabled*
+    You can disable LessSpace on startup by setting the
+    |g:lessspace_enabled| variable:
+>
+        let g:lessspace_enabled = 0
+<
+    (The same effect can be achieved after startup by just running
+    |:LessSpace!|.)
+
+                                                 *g:lessspace_whitelist*
+                                                 *g:lessspace_blacklist*
+    You can also specify the filetypes that it operates on by
+    specifying a filetype whitelist or blacklist.  By default, nothing
+    is blacklisted.  You can change this by setting either of the
+    `g:lessspace_whitelist` or `g:lessspace_blacklist` variables,
+    probably in your |vimrc| file.  These variables should be lists of
+    the desired filetypes.  For example, to only operate on Vim and
+    Ruby files, you could use:
+>
+        let g:lessspace_whitelist = ['ruby', 'vim']
+<
+    And to operate on everything but Python files:
+>
+        let g:lessspace_blacklist = ['python']
+<
+    (Previously, the whitelist had to be specified as a regex string.
+    If you are using this form, you should update to the list-based
+    method, as this will be removed soon.)
+
+======================================================================
+KNOWN ISSUES                                          *lessspace-issues*
+
+    There are no known bugs currently.  If you believe you have found
+    one, or if you would like to request a features, please let me
+    know by opening an issue on GitHub:
+
+        https://github.com/thirtythreeforty/lessspace.vim/issues
+
+    Thanks in advance!
+>
+ vim:filetype=help:textwidth=70:expandtab:tabstop=4:
