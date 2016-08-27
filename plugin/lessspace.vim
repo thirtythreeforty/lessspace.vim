@@ -16,91 +16,20 @@ if !exists('g:lessspace_enabled')
     let g:lessspace_enabled = 1
 endif
 
-fun! <SID>SetupTrailingWhitespaces()
-    let curline = line('.')
-    let b:insert_top = curline
-    let b:insert_bottom = curline
-    let b:whitespace_lastline = curline
-endfun
-
-fun! <SID>OnTextChangedI()
-    " Handle motion this way (rather than checking if
-    " b:insert_bottom < curline) to catch the case where the user presses
-    " Enter, types whitespace, moves up, and presses Enter again.
-    let curline = line('.')
-
-    if b:whitespace_lastline < curline
-        " User inserted lines below whitespace_lastline
-        let b:insert_bottom = b:insert_bottom + (curline - b:whitespace_lastline)
-    elseif b:whitespace_lastline > curline
-        " User inserted lines above whitespace_lastline
-        let b:insert_top = b:insert_top - (b:whitespace_lastline - curline)
-    endif
-
-    let b:whitespace_lastline = curline
-endfun
-
-fun! <SID>OnCursorMovedI()
-    " This function is called when the cursor moves, including when the
-    " user types text.  However we've already handled the text typing in the
-    " OnTextChangedI() hook, so this function is harmless.
-    let curline = line('.')
-
-    let b:insert_top = min([curline, b:insert_top])
-    let b:insert_bottom = max([curline, b:insert_bottom])
-    let b:whitespace_lastline = curline
-endfun
-
-fun! <SID>StripTrailingWhitespaces()
-    " Only do this on whitelisted filetypes and if the buffer is modifiable
-    if !<SID>ShouldStripFiletype(&filetype)
-        \ || !&modifiable
-        \ || !g:lessspace_enabled
-        \ || (exists('b:lessspace_enabled') && !b:lessspace_enabled)
-        return
-    endif
-
-    let original_cursor = getpos('.')
-
-    " Handle the user deleting lines at the bottom
-    let file_bottom = line('$')
-    if b:insert_bottom > file_bottom
-        let b:insert_bottom = file_bottom
-    endif
-
-    exe b:insert_top ',' b:insert_bottom 's/\v\s+$//e'
-    call setpos('.', original_cursor)
-endfun
-
-fun! <SID>ShouldStripFiletype(filetype)
-    " Whitelists override blacklists.
-    if exists("g:lessspace_whitelist")
-        if type(g:lessspace_whitelist) == type("")
-            " Legacy handling of a regex whitelist.
-            " Why did I ever think this was a good idea?
-            return a:filetype =~# g:lessspace_whitelist
-        endif
-
-        return index(g:lessspace_whitelist, a:filetype) >= 0
-    else
-        return !(index(g:lessspace_blacklist, a:filetype) >= 0)
-    endif
-endfun
-
 command! -bang LessSpace let g:lessspace_enabled = <bang>1
 command! -bang LessSpaceBuf let b:lessspace_enabled = <bang>1
 
 augroup LessSpace
     autocmd!
-    autocmd InsertEnter * :call <SID>SetupTrailingWhitespaces()
-    autocmd InsertLeave * :call <SID>StripTrailingWhitespaces()
-    autocmd TextChangedI * :call <SID>OnTextChangedI()
-    autocmd CursorMovedI * :call <SID>OnCursorMovedI()
+    autocmd InsertEnter * :call lessspace#SetupTrailingWhitespaces()
+    autocmd InsertLeave * :call lessspace#StripTrailingWhitespaces()
+    autocmd TextChangedI * :call lessspace#OnTextChangedI()
+    autocmd CursorMovedI * :call lessspace#OnCursorMovedI()
 
     " The user may move between buffers in insert mode
     " (for example, with the mouse), so handle this appropriately.
     autocmd BufEnter * :if mode() == 'i'
-        \ | call <SID>SetupTrailingWhitespaces() | endif
+        \ | call lessspace#SetupTrailingWhitespaces() | endif
     autocmd BufLeave * :if mode() == 'i'
-        \ | call <SID>StripTrailingWhitespaces() | endif
+        \ | call lessspace#StripTrailingWhitespaces() | endif
 augroup END
