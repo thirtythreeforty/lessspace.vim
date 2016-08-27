@@ -54,7 +54,7 @@ And to operate on everything but Python files:
     let g:lessspace_blacklist = ['python']
 
 (Previously, the whitelist had to be specified as a regex string.
-If you are using this form, it will continue to work, but you should update to the list-based method.)
+If you are using this form, you should update to the list-based method, as this will be removed soon.)
 
 ## License
 

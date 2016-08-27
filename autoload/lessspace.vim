@@ -60,6 +60,10 @@ fun! lessspace#ShouldStripFiletype(filetype)
         if type(g:lessspace_whitelist) == type("")
             " Legacy handling of a regex whitelist.
             " Why did I ever think this was a good idea?
+            if !exists("g:lessspace_whitelist_warning")
+                echoerr "Lessspace: regex filetype whitelists have been deprecated! Please use the new list-based format."
+                g:lessspace_whitelist_warning = 1
+            endif
             return a:filetype =~# g:lessspace_whitelist
         endif
 
