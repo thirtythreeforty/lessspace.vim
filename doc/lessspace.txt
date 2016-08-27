@@ -74,8 +74,8 @@ CONFIGURATION                                  *lessspace-configuration*
 KNOWN ISSUES                                          *lessspace-issues*
 
     There are no known bugs currently.  If you believe you have found
-    one, or if you would like to request a features, please let me
-    know by opening an issue on GitHub:
+    one, or if you would like to request a feature, please let me know
+    by opening an issue on GitHub:
 
         https://github.com/thirtythreeforty/lessspace.vim/issues
 
