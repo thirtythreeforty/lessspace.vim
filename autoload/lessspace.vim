@@ -1,8 +1,18 @@
-fun! lessspace#SetupTrailingWhitespaces()
+fun! lessspace#OnInsertEnter()
     let curline = line('.')
     let b:insert_top = curline
     let b:insert_bottom = curline
     let b:whitespace_lastline = curline
+endfun
+
+fun! lessspace#OnTextChanged()
+    " Text was modified in non-Insert mode.  Use the '[ and '] marks to find
+    " what was edited and remove its whitespace.
+    if g:lessspace_normal == 0
+        return
+    endif
+
+    call lessspace#MaybeStripWhitespace(line("'["), line("']"))
 endfun
 
 fun! lessspace#OnTextChangedI()
@@ -33,7 +43,17 @@ fun! lessspace#OnCursorMovedI()
     let b:whitespace_lastline = curline
 endfun
 
-fun! lessspace#StripTrailingWhitespaces()
+fun! lessspace#OnInsertExit()
+    " Handle the user deleting lines at the bottom
+    let file_bottom = line('$')
+    if b:insert_bottom > file_bottom
+        let b:insert_bottom = file_bottom
+    endif
+
+    call lessspace#MaybeStripWhitespace(b:insert_top, b:insert_bottom)
+endfun
+
+fun! lessspace#MaybeStripWhitespace(top, bottom)
     " Only do this on whitelisted filetypes and if the buffer is modifiable
     if !lessspace#ShouldStripFiletype(&filetype)
         \ || !&modifiable
@@ -42,15 +62,9 @@ fun! lessspace#StripTrailingWhitespaces()
         return
     endif
 
+    " All conditions passed, go ahead and strip
     let original_cursor = getpos('.')
-
-    " Handle the user deleting lines at the bottom
-    let file_bottom = line('$')
-    if b:insert_bottom > file_bottom
-        let b:insert_bottom = file_bottom
-    endif
-
-    exe b:insert_top ',' b:insert_bottom 's/\v\s+$//e'
+    exe a:top ',' a:bottom 's/\v\s+$//e'
     call setpos('.', original_cursor)
 endfun
 
@@ -72,5 +86,4 @@ fun! lessspace#ShouldStripFiletype(filetype)
         return !(index(g:lessspace_blacklist, a:filetype) >= 0)
     endif
 endfun
-
 
