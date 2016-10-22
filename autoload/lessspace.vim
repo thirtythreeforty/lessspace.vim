@@ -55,8 +55,10 @@ endfun
 
 fun! lessspace#MaybeStripWhitespace(top, bottom)
     " Only do this on whitelisted filetypes and if the buffer is modifiable
+    " and modified
     if !lessspace#ShouldStripFiletype(&filetype)
         \ || !&modifiable
+        \ || !&modified
         \ || !g:lessspace_enabled
         \ || (exists('b:lessspace_enabled') && !b:lessspace_enabled)
         return
