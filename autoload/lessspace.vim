@@ -12,7 +12,15 @@ fun! lessspace#OnTextChanged()
         return
     endif
 
-    call lessspace#MaybeStripWhitespace(line("'["), line("']"))
+    let file_bottom = line('$')
+    let l:top = line("'[")
+    if l:top > file_bottom
+        " User deleted lines at the bottom; nothing to strip
+        return
+    endif
+    let l:bottom = line("']")
+
+    call lessspace#MaybeStripWhitespace(l:top, l:bottom)
 endfun
 
 fun! lessspace#OnTextChangedI()
@@ -46,11 +54,10 @@ endfun
 fun! lessspace#OnInsertExit()
     " Handle the user deleting lines at the bottom
     let file_bottom = line('$')
-    if b:insert_bottom > file_bottom
-        let b:insert_bottom = file_bottom
-    endif
+    let l:top = min([file_bottom, b:insert_top])
+    let l:bottom = min([file_bottom, b:insert_bottom])
 
-    call lessspace#MaybeStripWhitespace(b:insert_top, b:insert_bottom)
+    call lessspace#MaybeStripWhitespace(l:top, l:bottom)
 endfun
 
 fun! lessspace#MaybeStripWhitespace(top, bottom)
