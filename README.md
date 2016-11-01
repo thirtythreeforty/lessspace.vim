@@ -40,6 +40,11 @@ You can disable LessSpace on startup by setting the `g:lessspace_enabled` variab
 
 (The same effect can be achieved after startup by just running `:LessSpace!`.)
 
+By default, LessSpace strips whitespace after normal mode operations (such as when you |put| something from a register).
+If you don't want this, you can have LessSpace only work in insert mode by setting `g:lessspace_normal`:
+
+    let g:lessspace_normal = 0
+
 You can also specify the filetypes that it operates on by specifying a filetype whitelist or blacklist.
 (Perhaps, for example, you're writing [Whitespace](https://en.wikipedia.org/wiki/Whitespace_%28programming_language%29).)
 By default, nothing is blacklisted.

@@ -16,20 +16,27 @@ if !exists('g:lessspace_enabled')
     let g:lessspace_enabled = 1
 endif
 
+" By default, strip whitespace in normal mode
+if !exists('g:lessspace_normal')
+    let g:lessspace_normal = 1
+endif
+
 command! -bang LessSpace let g:lessspace_enabled = <bang>1
 command! -bang LessSpaceBuf let b:lessspace_enabled = <bang>1
 
 augroup LessSpace
     autocmd!
-    autocmd InsertEnter * :call lessspace#SetupTrailingWhitespaces()
-    autocmd InsertLeave * :call lessspace#StripTrailingWhitespaces()
+    autocmd InsertEnter * :call lessspace#OnInsertEnter()
+    autocmd InsertLeave * :call lessspace#OnInsertExit()
     autocmd TextChangedI * :call lessspace#OnTextChangedI()
     autocmd CursorMovedI * :call lessspace#OnCursorMovedI()
+
+    autocmd TextChanged * :call lessspace#OnTextChanged()
 
     " The user may move between buffers in insert mode
     " (for example, with the mouse), so handle this appropriately.
     autocmd BufEnter * :if mode() == 'i'
-        \ | call lessspace#SetupTrailingWhitespaces() | endif
+        \ | call lessspace#OnInsertEnter() | endif
     autocmd BufLeave * :if mode() == 'i'
-        \ | call lessspace#StripTrailingWhitespaces() | endif
+        \ | call lessspace#OnInsertExit() | endif
 augroup END
