@@ -18,7 +18,10 @@ fun! lessspace#OnTextChanged()
         " User deleted lines at the bottom; nothing to strip
         return
     endif
-    let l:bottom = line("']")
+
+    " Sometimes undo and redo affect an extra line (this may have to do with
+    " plugins people are using; I'm not sure), so clamp the bottom line.
+    let l:bottom = min([file_bottom, line("']")])
 
     call lessspace#MaybeStripWhitespace(l:top, l:bottom)
 endfun
