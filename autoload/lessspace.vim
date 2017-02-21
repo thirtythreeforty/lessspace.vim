@@ -75,8 +75,16 @@ fun! lessspace#MaybeStripWhitespace(top, bottom)
     endif
 
     " All conditions passed, go ahead and strip
-    let original_cursor = getpos('.')
+
+    " Keep these marks:
+    let original_cursor = getcurpos()
+    let first_changed = getpos("'[")
+    let last_changed = getpos("']")
+
     exe a:top ',' a:bottom 's/\v\s+$//e'
+
+    call setpos("']", last_changed)
+    call setpos("'[", first_changed)
     call setpos('.', original_cursor)
 endfun
 
