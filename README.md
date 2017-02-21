@@ -1,7 +1,7 @@
 # LessSpace.vim
 
 This simple plugin will strip the trailing whitespace from the file you are editing.
-However, it does this only on the lines you have visited in Insert mode; it leaves all the others untouched.
+However, it does this only on the lines you edit or visit in Insert mode; it leaves all the others untouched.
 
 I wrote this plugin because I work with people whose editors don't clean up whitespace.
 My editor (Vim) *did* strip all whitespace, and saving my edits caused a lot of extraneous whitespace changes that showed up in version control logs.
@@ -63,5 +63,5 @@ This has been deprecated and removed; you should update to the list-based method
 
 ## License
 
-Copyright © 2015 George Hilliard.  Distributed under the same terms as Vim itself.
+Copyright © 2015-2017 George Hilliard.  Distributed under the same terms as Vim itself.
 See `:help license`.
