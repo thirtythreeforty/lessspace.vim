@@ -65,12 +65,13 @@ endfun
 
 fun! lessspace#MaybeStripWhitespace(top, bottom)
     " Only do this on whitelisted filetypes and if the buffer is modifiable
-    " and modified
+    " and modified and we are at the tip of an undo tree
     if !lessspace#ShouldStripFiletype(&filetype)
         \ || !&modifiable
         \ || !&modified
         \ || !g:lessspace_enabled
         \ || (exists('b:lessspace_enabled') && !b:lessspace_enabled)
+        \ || !lessspace#AtTipOfUndo()
         return
     endif
 
@@ -97,3 +98,9 @@ fun! lessspace#ShouldStripFiletype(filetype)
     endif
 endfun
 
+fun! lessspace#AtTipOfUndo()
+    let tree = undotree()
+    echom tree['seq_last']
+    echom tree['seq_cur']
+    return tree['seq_last'] == tree['seq_cur']
+endfun
