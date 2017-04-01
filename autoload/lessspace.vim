@@ -100,7 +100,5 @@ endfun
 
 fun! lessspace#AtTipOfUndo()
     let tree = undotree()
-    echom tree['seq_last']
-    echom tree['seq_cur']
     return tree['seq_last'] == tree['seq_cur']
 endfun
