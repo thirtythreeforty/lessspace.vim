@@ -77,8 +77,12 @@ fun! lessspace#MaybeStripWhitespace(top, bottom)
 
     " All conditions passed, go ahead and strip
 
-    " Keep these marks:
-    let original_cursor = getcurpos()
+    " Keep the cursor position and these marks:
+    if exists('*getcurpos')
+        let original_cursor = getcurpos()
+    else
+        let original_cursor = getpos('.')
+    endif
     let first_changed = getpos("'[")
     let last_changed = getpos("']")
 
