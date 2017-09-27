@@ -106,3 +106,12 @@ fun! lessspace#AtTipOfUndo()
     let tree = undotree()
     return tree['seq_last'] == tree['seq_cur']
 endfun
+
+fun! lessspace#TemporaryDisableBegin()
+    let b:lessspace_enabled_kept = (!exists('b:lessspace_enabled') || b:lessspace_enabled)
+    let b:lessspace_enabled = 0
+endfun
+
+fun! lessspace#TemporaryDisableEnd()
+    let b:lessspace_enabled = b:lessspace_enabled_kept
+endfun

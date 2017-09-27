@@ -39,4 +39,7 @@ augroup LessSpace
         \ | call lessspace#OnInsertEnter() | endif
     autocmd BufLeave * :if mode() == 'i'
         \ | call lessspace#OnInsertExit() | endif
+
+    autocmd User MultipleCursorsPre call lessspace#TemporaryDisableBegin()
+    autocmd User MultipleCursorsPost call lessspace#TemporaryDisableEnd()
 augroup END
