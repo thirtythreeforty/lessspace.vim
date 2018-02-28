@@ -58,6 +58,17 @@ CONFIGURATION                                  *lessspace-configuration*
 >
         let g:lessspace_normal = 0
 <
+                                             *g:lessspace_defer_current*
+    If you don't like it when LessSpace strips whitespace out from
+    under your cursor (moving it in the process), you can enable
+    deferred stripping, which strips the current line's whitespace
+    only after you move the cursor away, or save the file:
+>
+        let g:lessspace_defer_current = 1
+<
+    By default, this is not enabled, to maintain consistency with the
+    behavior of all other lines.
+
                                                  *g:lessspace_whitelist*
                                                  *g:lessspace_blacklist*
     You can also specify the filetypes that it operates on by

@@ -45,6 +45,12 @@ If you don't want this, you can have LessSpace only work in insert mode by setti
 
     let g:lessspace_normal = 0
 
+If you don't like it when LessSpace strips whitespace out from under your cursor (moving it in the process), you can enable deferred stripping, which strips the current line's whitespace only after you move the cursor away, or save the file:
+
+    let g:lessspace_defer_current = 1
+
+By default, this is not enabled, to maintain consistency with the behavior of all other lines.
+
 You can also specify the filetypes that it operates on by specifying a filetype whitelist or blacklist.
 (Perhaps, for example, you're writing [Whitespace](https://en.wikipedia.org/wiki/Whitespace_%28programming_language%29).)
 By default, nothing is blacklisted.

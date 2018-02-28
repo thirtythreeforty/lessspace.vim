@@ -6,13 +6,7 @@ fun! lessspace#OnInsertEnter()
 endfun
 
 fun! lessspace#OnTextChanged()
-    " Text was modified in non-Insert mode.  Use the '[ and '] marks to find
-    " what was edited and remove its whitespace.
-    if g:lessspace_normal == 0
-        return
-    endif
-
-    call lessspace#MaybeStripWhitespace(line("'["), line("']"))
+    call lessspace#MaybeStripWhitespace(0, line("'["), line("']"))
 endfun
 
 fun! lessspace#OnTextChangedI()
@@ -32,6 +26,16 @@ fun! lessspace#OnTextChangedI()
     let b:whitespace_lastline = curline
 endfun
 
+fun! lessspace#DoDeferredStrip(even_if_current)
+    " The only function we perform here is to check if we have deferred a
+    " strip, and perform it if so
+    if g:lessspace_defer_current
+        \ && exists('b:strip_deferred')
+        \ && (a:even_if_current || b:strip_deferred != line('.'))
+        call lessspace#MaybeStripWhitespace(1, b:strip_deferred, b:strip_deferred)
+    endif
+endfun
+
 fun! lessspace#OnCursorMovedI()
     " This function is called when the cursor moves, including when the
     " user types text.  However we've already handled the text typing in the
@@ -41,13 +45,15 @@ fun! lessspace#OnCursorMovedI()
     let b:insert_top = min([curline, b:insert_top])
     let b:insert_bottom = max([curline, b:insert_bottom])
     let b:whitespace_lastline = curline
+
+    call lessspace#DoDeferredStrip(0)
 endfun
 
-fun! lessspace#OnInsertExit()
-    call lessspace#MaybeStripWhitespace(b:insert_top, b:insert_bottom)
+fun! lessspace#OnInsertExit(strip_current_now)
+    call lessspace#MaybeStripWhitespace(a:strip_current_now, b:insert_top, b:insert_bottom)
 endfun
 
-fun! lessspace#MaybeStripWhitespace(top, bottom)
+fun! lessspace#MaybeStripWhitespace(strip_current_now, top, bottom)
     " Only do this on whitelisted filetypes and if the buffer is modifiable
     " and modified and we are at the tip of an undo tree
     if !lessspace#ShouldStripFiletype(&filetype)
@@ -80,7 +86,19 @@ fun! lessspace#MaybeStripWhitespace(top, bottom)
     let first_changed = getpos("'[")
     let last_changed = getpos("']")
 
-    exe a:top ',' a:bottom 's/\v\s+$//e'
+    let l:stripcmd = 's/\v\s+$//e'
+    if a:strip_current_now || !g:lessspace_defer_current
+        unlet! b:strip_deferred
+        exe a:top ',' b:bottom l:stripcmd
+    else
+        let b:strip_deferred = line('.')
+        if a:top < b:strip_deferred
+            exe a:top ',' (b:strip_deferred - 1) l:stripcmd
+        end
+        if b:bottom > b:strip_deferred
+            exe (b:strip_deferred + 1) ',' b:bottom l:stripcmd
+        end
+    end
 
     call setpos("']", last_changed)
     call setpos("'[", first_changed)

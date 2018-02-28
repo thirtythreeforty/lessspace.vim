@@ -21,13 +21,18 @@ if !exists('g:lessspace_normal')
     let g:lessspace_normal = 1
 endif
 
+" By default, don't defer current line stripping
+if !exists('g:lessspace_defer_current')
+    let g:lessspace_defer_current = 0
+endif
+
 command! -bang LessSpace let g:lessspace_enabled = <bang>1
 command! -bang LessSpaceBuf let b:lessspace_enabled = <bang>1
 
 augroup LessSpace
     autocmd!
     autocmd InsertEnter * :call lessspace#OnInsertEnter()
-    autocmd InsertLeave * :call lessspace#OnInsertExit()
+    autocmd InsertLeave * :call lessspace#OnInsertExit(0)
     autocmd TextChangedI * :call lessspace#OnTextChangedI()
     autocmd CursorMovedI * :call lessspace#OnCursorMovedI()
 
@@ -38,7 +43,13 @@ augroup LessSpace
     autocmd BufEnter * :if mode() == 'i'
         \ | call lessspace#OnInsertEnter() | endif
     autocmd BufLeave * :if mode() == 'i'
-        \ | call lessspace#OnInsertExit() | endif
+        \ | call lessspace#OnInsertExit(1) | endif
+
+    autocmd CursorMoved * :call lessspace#DoDeferredStrip(0)
+    autocmd BufWritePre * :call lessspace#DoDeferredStrip(1)
+    autocmd FileWritePre * :call lessspace#DoDeferredStrip(1)
+    autocmd FileAppendPre * :call lessspace#DoDeferredStrip(1)
+    autocmd FilterWritePre * :call lessspace#DoDeferredStrip(1)
 
     autocmd User MultipleCursorsPre call lessspace#TemporaryDisableBegin()
     autocmd User MultipleCursorsPost call lessspace#TemporaryDisableEnd()
