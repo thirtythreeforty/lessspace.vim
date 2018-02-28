@@ -6,6 +6,12 @@ fun! lessspace#OnInsertEnter()
 endfun
 
 fun! lessspace#OnTextChanged()
+    " BUG! This is called when I'm not expecting it: when leaving insert mode.
+    " I think this is triggered by a plugin, but I'm not sure.
+    " This leads to a forced non-deferred strip happening immediately after
+    " leaving insert, cancelling the deferral.
+
+    "echom "OnTextChanged"
     " Text was modified in non-Insert mode.  Use the '[ and '] marks to find
     " what was edited and remove its whitespace.
     if g:lessspace_normal == 0
@@ -23,7 +29,7 @@ fun! lessspace#OnTextChanged()
     " plugins people are using; I'm not sure), so clamp the bottom line.
     let l:bottom = min([file_bottom, line("']")])
 
-    call lessspace#MaybeStripWhitespace(l:top, l:bottom)
+    call lessspace#MaybeStripWhitespace(1, l:top, l:bottom)
 endfun
 
 fun! lessspace#OnTextChangedI()
@@ -43,7 +49,19 @@ fun! lessspace#OnTextChangedI()
     let b:whitespace_lastline = curline
 endfun
 
+fun! lessspace#DoDeferredStrip(even_if_current)
+    "echom "DoDeferredStrip " . a:even_if_current . " line " . line('.')
+    " The only function we perform here is to check if we have deferred a
+    " strip, and perform it if so
+    let curline = line('.')
+    "echom "DoDeferred: strip_deferred_line=" . b:strip_deferred_line
+    if exists('b:strip_deferred') && b:strip_deferred && (a:even_if_current || b:strip_deferred_line != curline)
+        call lessspace#MaybeStripWhitespace(1, b:strip_deferred_line, b:strip_deferred_line)
+    endif
+endfun
+
 fun! lessspace#OnCursorMovedI()
+    "echom "OnCursorMovedI "
     " This function is called when the cursor moves, including when the
     " user types text.  However we've already handled the text typing in the
     " OnTextChangedI() hook, so this function is harmless.
@@ -54,16 +72,18 @@ fun! lessspace#OnCursorMovedI()
     let b:whitespace_lastline = curline
 endfun
 
-fun! lessspace#OnInsertExit()
+fun! lessspace#OnInsertExit(strip_current_now)
+    "echom "OnInsertExit " . a:strip_current_now
     " Handle the user deleting lines at the bottom
     let file_bottom = line('$')
     let l:top = min([file_bottom, b:insert_top])
     let l:bottom = min([file_bottom, b:insert_bottom])
 
-    call lessspace#MaybeStripWhitespace(l:top, l:bottom)
+    call lessspace#MaybeStripWhitespace(a:strip_current_now, l:top, l:bottom)
 endfun
 
-fun! lessspace#MaybeStripWhitespace(top, bottom)
+fun! lessspace#MaybeStripWhitespace(strip_current_now, top, bottom)
+    "echom "MaybeStripWhitespace " . a:strip_current_now
     " Only do this on whitelisted filetypes and if the buffer is modifiable
     " and modified and we are at the tip of an undo tree
     if !lessspace#ShouldStripFiletype(&filetype)
@@ -86,7 +106,21 @@ fun! lessspace#MaybeStripWhitespace(top, bottom)
     let first_changed = getpos("'[")
     let last_changed = getpos("']")
 
-    exe a:top ',' a:bottom 's/\v\s+$//e'
+    if a:strip_current_now
+        "echom "not deferred " . a:top . " " . a:bottom
+        let b:strip_deferred = 0
+        exe a:top ',' a:bottom 's/\v\s+$//e'
+    else
+        "echom "deferred"
+        let b:strip_deferred = 1
+        let b:strip_deferred_line = line('.')
+        if a:top < b:strip_deferred_line
+            exe a:top ',' b:strip_deferred_line-1 's/\v\s+$//e'
+        end
+        if a:bottom > b:strip_deferred_line
+            exe b:strip_deferred_line+1 ',' a:bottom 's/\v\s+$//e'
+        end
+    end
 
     call setpos("']", last_changed)
     call setpos("'[", first_changed)
