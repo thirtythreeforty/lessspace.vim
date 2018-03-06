@@ -71,6 +71,7 @@ fun! lessspace#MaybeStripWhitespace(top, bottom)
         \ || !&modified
         \ || !g:lessspace_enabled
         \ || (exists('b:lessspace_enabled') && !b:lessspace_enabled)
+        \ || (exists('g:lessspace_temporary_disable') && g:lessspace_temporary_disable > 0)
         \ || !lessspace#AtTipOfUndo()
         return
     endif
@@ -108,10 +109,15 @@ fun! lessspace#AtTipOfUndo()
 endfun
 
 fun! lessspace#TemporaryDisableBegin()
-    let b:lessspace_enabled_kept = (!exists('b:lessspace_enabled') || b:lessspace_enabled)
-    let b:lessspace_enabled = 0
+    if exists('g:lessspace_temporary_disable')
+        let g:lessspace_temporary_disable = g:lessspace_temporary_disable + 1
+    else
+        let g:lessspace_temporary_disable = 1
+    endif
 endfun
 
 fun! lessspace#TemporaryDisableEnd()
-    let b:lessspace_enabled = b:lessspace_enabled_kept
+    if exists('g:lessspace_temporary_disable')
+        let g:lessspace_temporary_disable = max(0, g:lessspace_temporary_disable - 1)
+    endif
 endfun

@@ -87,6 +87,13 @@ KNOWN ISSUES                                          *lessspace-issues*
 
         https://github.com/thirtythreeforty/lessspace.vim/issues
 
+    If LessSpace bothers your plugin, you can call these functions to
+    temporarily disable it while your plugin runs.  Please also file
+    an issue so we can improve mutual compatibility.
+>
+        call lessspace#TemporaryDisableBegin()
+        call lessspace#TemporaryDisableEnd()
+<
     Thanks in advance!
 >
  vim:filetype=help:textwidth=70:expandtab:tabstop=4:
