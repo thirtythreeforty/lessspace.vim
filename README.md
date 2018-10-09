@@ -61,6 +61,14 @@ And to operate on everything but Python files:
 (Previously, the whitelist had to be specified as a regex string.
 This has been deprecated and removed; you should update to the list-based method.)
 
+## Integrating
+If LessSpace bothers your plugin, you can call these functions to temporarily disable it while your plugin runs:
+
+    call lessspace#TemporaryDisableBegin()
+    call lessspace#TemporaryDisableEnd()
+
+In such cases, please file an issue on GitHub to see if we can make the integration better!
+
 ## License
 
 Copyright © 2015-2017 George Hilliard.  Distributed under the same terms as Vim itself.

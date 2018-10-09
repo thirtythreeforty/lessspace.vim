@@ -12,18 +12,7 @@ fun! lessspace#OnTextChanged()
         return
     endif
 
-    let file_bottom = line('$')
-    let l:top = line("'[")
-    if l:top > file_bottom
-        " User deleted lines at the bottom; nothing to strip
-        return
-    endif
-
-    " Sometimes undo and redo affect an extra line (this may have to do with
-    " plugins people are using; I'm not sure), so clamp the bottom line.
-    let l:bottom = min([file_bottom, line("']")])
-
-    call lessspace#MaybeStripWhitespace(l:top, l:bottom)
+    call lessspace#MaybeStripWhitespace(line("'["), line("']"))
 endfun
 
 fun! lessspace#OnTextChangedI()
@@ -55,12 +44,7 @@ fun! lessspace#OnCursorMovedI()
 endfun
 
 fun! lessspace#OnInsertExit()
-    " Handle the user deleting lines at the bottom
-    let file_bottom = line('$')
-    let l:top = min([file_bottom, b:insert_top])
-    let l:bottom = min([file_bottom, b:insert_bottom])
-
-    call lessspace#MaybeStripWhitespace(l:top, l:bottom)
+    call lessspace#MaybeStripWhitespace(b:insert_top, b:insert_bottom)
 endfun
 
 fun! lessspace#MaybeStripWhitespace(top, bottom)
@@ -71,11 +55,21 @@ fun! lessspace#MaybeStripWhitespace(top, bottom)
         \ || !&modified
         \ || !g:lessspace_enabled
         \ || (exists('b:lessspace_enabled') && !b:lessspace_enabled)
+        \ || (exists('g:lessspace_temporary_disable') && g:lessspace_temporary_disable > 0)
         \ || !lessspace#AtTipOfUndo()
         return
     endif
 
     " All conditions passed, go ahead and strip
+
+    " Handle the user deleting lines at the bottom
+    let file_bottom = line('$')
+
+    if a:top > file_bottom
+        " The user deleted all the lines; there is nothing to do
+        return
+    endif
+    let b:bottom = min([file_bottom, a:bottom])
 
     " Keep the cursor position and these marks:
     if exists('*getcurpos')
@@ -108,10 +102,15 @@ fun! lessspace#AtTipOfUndo()
 endfun
 
 fun! lessspace#TemporaryDisableBegin()
-    let b:lessspace_enabled_kept = (!exists('b:lessspace_enabled') || b:lessspace_enabled)
-    let b:lessspace_enabled = 0
+    if exists('g:lessspace_temporary_disable')
+        let g:lessspace_temporary_disable = g:lessspace_temporary_disable + 1
+    else
+        let g:lessspace_temporary_disable = 1
+    endif
 endfun
 
 fun! lessspace#TemporaryDisableEnd()
-    let b:lessspace_enabled = b:lessspace_enabled_kept
+    if exists('g:lessspace_temporary_disable')
+        let g:lessspace_temporary_disable = max(0, g:lessspace_temporary_disable - 1)
+    endif
 endfun
