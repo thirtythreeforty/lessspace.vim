@@ -71,5 +71,5 @@ In such cases, please file an issue on GitHub to see if we can make the integrat
 
 ## License
 
-Copyright © 2015-2017 George Hilliard.  Distributed under the same terms as Vim itself.
+Copyright © 2015-2018 George Hilliard.  Distributed under the same terms as Vim itself.
 See `:help license`.
