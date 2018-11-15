@@ -111,6 +111,6 @@ endfun
 
 fun! lessspace#TemporaryDisableEnd()
     if exists('g:lessspace_temporary_disable')
-        let g:lessspace_temporary_disable = max(0, g:lessspace_temporary_disable - 1)
+        let g:lessspace_temporary_disable = max([0, g:lessspace_temporary_disable - 1])
     endif
 endfun
