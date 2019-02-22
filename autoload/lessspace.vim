@@ -80,7 +80,7 @@ fun! lessspace#MaybeStripWhitespace(top, bottom)
     let first_changed = getpos("'[")
     let last_changed = getpos("']")
 
-    exe a:top ',' a:bottom 's/\v\s+$//e'
+    exe a:top ',' b:bottom 's/\v\s+$//e'
 
     call setpos("']", last_changed)
     call setpos("'[", first_changed)
