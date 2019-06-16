@@ -6,9 +6,9 @@ if exists('g:loaded_lessspace_plugin')
 endif
 let g:loaded_lessspace_plugin = 1
 
-" By default blacklist nothing, unless the user has other preferences
+" Default blacklist, unless the user has other preferences
 if !exists('g:lessspace_whitelist') && !exists('g:lessspace_blacklist')
-    let g:lessspace_blacklist = []
+    let g:lessspace_blacklist = ['diff']
 endif
 
 " By default, enable by default
