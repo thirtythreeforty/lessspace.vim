@@ -89,7 +89,7 @@ endfun
 
 fun! lessspace#ShouldStripFiletype(filetype)
     " Whitelists override blacklists.
-    if exists("g:lessspace_whitelist")
+    if exists('g:lessspace_whitelist')
         return index(g:lessspace_whitelist, a:filetype) >= 0
     else
         return !(index(g:lessspace_blacklist, a:filetype) >= 0)
