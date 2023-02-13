@@ -44,6 +44,13 @@ fun! lessspace#OnCursorMovedI()
 endfun
 
 fun! lessspace#OnInsertExit()
+    " Plugins such as telescope.nvim's preview window call OnInsertExit
+    " without first calling OnInsertEnter.  Make sure we have our vars
+    " before trying to strip.
+    if !exists('b:insert_top')
+        return
+    endif
+
     call lessspace#MaybeStripWhitespace(b:insert_top, b:insert_bottom)
 endfun
 
